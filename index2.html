@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Векторно-просторова модель</title>
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <h1>Режим з використанням векторно-просторової моделі</h1>
+    <section class="main">
+        <div class="subsection">
+            <h2>Введіть відкритий текст</h2>
+            <form id="encrypt-form">
+                <input type="text" id="encrypt" pattern="[a-z ]+" title="Будь ласка, використовуйти тільки літери англійського алфавіту в нижньому регістрі"/>
+            <button class="button" type="submit">Зашифрувати</button>
+        </form>
+            <div class="result-section" id="encryption-result-section">
+                <h2>Результат шифрування</h2>
+                <div id="encryption-result">
+                </div>
+        </div>
+        </div>
+        <div class="subsection">
+            <h2>Введіть зашифрований текст</h2>
+            <form id="decrypt-form">
+                <input type="text" id="decrypt" pattern="[a-z ]+" title="Будь ласка, використовуйти тільки літери англійського алфавіту в нижньому регістрі"/>
+            <button class="button" id="decrypt-button" type="submit">Розшифрувати</button>
+        </form>
+            <div class="result-section" id="decryption-result-section">
+                <h2>Результат розшифрування</h2>
+                <div id="decryption-result">
+                </div>
+            </div>
+        </div>
+    </section>
+    <div>
+        <a href="./index.html">Режим з використанням булевої моделі</a>
+    </div>
+    <script type="text/javascript" src="./index.js">
+    </script>
+</body>
+</html>
