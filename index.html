@@ -13,7 +13,7 @@
         <div  id="terms-section" class="subsection">
             <h2>Введіть множину індексних термів (через кому, наприклад: book,music)</h2>
             <form id="term-form">
-                <input type="text" id="term" pattern="^[a-zA-Z]+(,[a-zA-Z]+)*$" title="Будь ласка, використовуйти тільки літери англійського алфавіту в нижньому регістрі"/>
+                <input type="text" id="term" pattern="^[\.a-zA-Z, ]*$" title="Будь ласка, використовуйти тільки літери англійського алфавіту в нижньому регістрі"/>
             <button class="button" type="submit">Зберегти терми</button>
         </form>
         </div>
@@ -25,20 +25,22 @@
         <div id="documents-section" class="subsection">
             <h2>Введіть колекцію документів</h2>
             <form id="document-form">
-                <input type="text" id="document" pattern="^[a-zA-Z,]*$" title="Будь ласка, використовуйти тільки літери англійського алфавіту в нижньому регістрі"/>
+                <input type="text" id="document" />
             <button class="button" id="document-button" type="submit">Зберегти документ</button>
         </form>
-            <div class="result-section" id="documention-result-section">
-                <h2>Додані документи</h2>
-                <div id="documention-result">
-                </div>
+            <button class="button" id="document-next-stage-button" type="submit">Перейти до наступного кроку</button>
+            
+        </div>
+        <div class="result-section" id="documention-result-section">
+            <h2>Додані документи</h2>
+            <div id="documention-result">
             </div>
         </div>
         <div id="search-section" class="subsection">
             <h2>Введіть пошуковий запит використовуючи символи && як І та || як АБО</h2>
             <form id="search-form">
                 <input type="text" id="search" pattern="^[a-zA-Z,]*$" title="Будь ласка, використовуйти тільки літери англійського алфавіту в нижньому регістрі"/>
-            <button class="button" id="search-button" type="submit">Зберегти документ</button>
+            <button class="button" id="search-button" type="submit">Пошук</button>
         </form>
             <div class="result-section" id="search-result-section">
                 <h2>Додані документи</h2>
