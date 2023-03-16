@@ -1,3 +1,14 @@
+function isDNF(query) {
+  // Match the query against the regular expression for DNF
+
+  // Check if all matches are combined with OR operators
+  if (query.includes(') AND') || query.includes('AND (')) {
+    return false;
+  }
+
+  return true;
+}
+
 const getTerms = query =>
   query
     .split(/(\(|\)|\s+OR\s+|\s+AND\s+|\s+NOT\s+)/)
@@ -110,13 +121,37 @@ function booleanModel(query, documents) {
   console.log('su', subterms);
 
   if (subterms?.length > 0) {
-    return subterms.map((sterms, i) => {
-      console.log(sterms);
-      if (i % 2 !== 0) {
+    const subresults = subterms.map((sterms, i) => {
+      if (i % 2 === 0) {
         return searchBySubterms(sterms);
       }
       return sterms[0];
     });
+    let result = [];
+    for (let i = 1; i < subresults.length - 1; i += 2) {
+      if (result.length === 0) {
+        if (i === 1) {
+          if (subresults[i] === 'OR') {
+            result = [...subresults[i - 1], ...subresults[i + 1]];
+          } else if (subresults[i] === 'AND') {
+            result = subresults[i - 1].filter(doc => subresults[i + 1].includes(doc));
+          }
+        } else {
+          if (subresults[i] === 'OR') {
+            result = [...result, ...subresults[i + 1]];
+          } else if (subresults[i] === 'AND') {
+            result = result.filter(doc => subresults[i + 1].includes(doc));
+          }
+        }
+      } else if (result.length > 0) {
+        if (subresults[i] === 'OR') {
+          result = [...result, ...subresults[i + 1]];
+        } else if (subresults[i] === 'AND') {
+          result = result.filter(doc => subresults[i + 1].includes(doc));
+        }
+      }
+    }
+    return [...new Set(result)];
   }
 
   return searchBySubterms(terms);
@@ -132,10 +167,10 @@ const documents = {
 };
 
 // Задаємо запит у кон'юнктивній нормальній формі
-const query = 'apple AND banana OR pear AND NOT kiwi';
+const query = 'apple OR (pear AND NOT kiwi) OR orange';
 
 // Використовуємо булеву модель для знаходження документів, які містять запит
 const result = booleanModel(query, documents);
 
 // Виводимо результат
-console.log(result);
+console.log(isDNF(query));
