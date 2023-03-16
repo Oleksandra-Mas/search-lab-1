@@ -1,7 +1,4 @@
 function isDNF(query) {
-  // Match the query against the regular expression for DNF
-
-  // Check if all matches are combined with OR operators
   if (query.includes(') AND') || query.includes('AND (')) {
     return false;
   }
