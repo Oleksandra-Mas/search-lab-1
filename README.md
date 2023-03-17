@@ -9,5 +9,5 @@ grape. I have an a banana, a grape, a kiwi. I have an apple, an orange, a kiwi.
 
 ### query example
 
-apple OR (pear AND NOT kiwi) OR orange (apple AND orange) OR (pear AND NOT kiwi) OR orange (pear AND
-kiwi) OR (pear AND banana) OR NOT NOT kiwi
+- apple OR (pear AND NOT kiwi) OR orange (apple AND orange) OR (pear AND NOT kiwi) OR orange
+- (pear AND kiwi) OR (pear AND banana) OR NOT NOT kiwi

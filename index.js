@@ -33,7 +33,6 @@ const onTermFormSubmit = event => {
     return;
   }
   terms = [...new Set(text.split(', ').map(line => line.trim()))];
-  console.log(terms);
 
   const termsToDisplay = terms.map((term, i) => `term ${i + 1}: "${term}"`).join('<br>');
   termSection.style.display = 'none';
@@ -43,7 +42,6 @@ const onTermFormSubmit = event => {
 };
 
 const onNextStageClicked = () => {
-  console.log(documents?.length);
   if (!documents?.length || documents?.length < 1) {
     alert('Введіть хоча б один документ');
     return;
@@ -56,6 +54,7 @@ const onDocumentFormSubmit = event => {
   event.preventDefault();
   const text = documentInput.value;
   if (!text) {
+    alert('Введіть зміст документу');
     return;
   }
   documentresultSection.style.display = 'block';
@@ -74,15 +73,19 @@ const onSearchFormSubmit = event => {
     alert('Введіть пошуковий запит в нормальній диз`юнктивній формі');
     return;
   }
-  searchResultSection.style.display = 'block';
   if (!isDNF(text)) {
     alert('Введіть пошуковий запит в нормальній диз`юнктивній формі');
+    return;
   }
+  const searchRes = booleanModel(text, documentsObject);
+  if (!searchRes) {
+    return;
+  }
+  searchResultSection.style.display = 'block';
   searchqueryResult.innerHTML = text;
-  searchResult.innerHTML = `Документи, що відповідають результатам пошуку: ${booleanModel(
-    text,
-    documentsObject,
-  )}`;
+  searchResult.innerHTML = searchRes?.length
+    ? `Документи, що відповідають результатам пошуку: ${searchRes}`
+    : 'Документи не знайдено';
   searchForm.reset();
 };
 
@@ -93,7 +96,12 @@ searchForm.addEventListener('submit', onSearchFormSubmit);
 
 // ______________________________________________________
 function isDNF(query) {
-  if (query.includes(') AND') || query.includes('AND (')) {
+  if (
+    query.includes(') AND') ||
+    query.includes('AND (') ||
+    query.includes('NOT (') ||
+    query.includes('NOT NOT')
+  ) {
     return false;
   }
   return true;
@@ -199,8 +207,26 @@ const searchBySubterms = (terms, docs) => {
 };
 
 function booleanModel(query, docs) {
-  const terms = getTerms(query);
-  const subterms = getSubTerms(terms);
+  const newTerms = getTerms(query);
+  let shouldQuit = false;
+  newTerms.forEach(newTerm => {
+    if (
+      newTerm !== 'AND' &&
+      newTerm !== 'OR' &&
+      newTerm !== 'NOT' &&
+      newTerm !== '(' &&
+      newTerm !== ')'
+    ) {
+      if (!terms.includes(newTerm)) {
+        shouldQuit = true;
+        alert('Невідомий терм в запиті');
+      }
+    }
+  });
+  if (shouldQuit) {
+    return false;
+  }
+  const subterms = getSubTerms(newTerms);
 
   if (subterms?.length > 0) {
     const subresults = subterms.map((sterms, i) => {
@@ -236,7 +262,7 @@ function booleanModel(query, docs) {
     return [...new Set(result)];
   }
 
-  return searchBySubterms(terms);
+  return searchBySubterms(newTerms, docs);
 }
 
 function createDocumentObject(documents, terms) {
