@@ -12,7 +12,8 @@
     <section class="main">
       <div id="terms-section" class="subsection">
         <h2>
-          Введіть множину індексних термів через кому, наприклад: apple, orange, pear, kiwi, orange
+          Введіть множину індексних термів через кому, наприклад: apple, orange, pear, kiwi, grape,
+          banana
         </h2>
         <form id="term-form">
           <input
@@ -48,17 +49,14 @@
           (pear AND NOT kiwi) OR orange
         </h2>
         <form id="search-form">
-          <input
-            type="text"
-            id="search"
-            pattern="^[a-zA-Z,]*$"
-            title="Будь ласка, використовуйти тільки літери англійського алфавіту в нижньому регістрі"
-          />
+          <input type="text" id="search" />
           <button class="button" id="search-button" type="submit">Пошук</button>
         </form>
         <div class="result-section" id="search-result-section">
-          <h2>Додані документи</h2>
-          <div id="searchion-result"></div>
+          <h2>Пошуковий запит:</h2>
+          <div id="search-query"></div>
+          <h2>Результат пошуку:</h2>
+          <div id="search-result"></div>
         </div>
       </div>
     </section>
