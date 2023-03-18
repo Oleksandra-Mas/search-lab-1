@@ -18,7 +18,7 @@ let documents = [];
 let currentDocId = 0;
 let doc_vectors = [];
 let idf;
-const threshold = 0.4;
+const threshold = 0.1;
 
 const onNextStageClicked = () => {
   if (!documents?.length || documents?.length < 1) {
@@ -27,13 +27,6 @@ const onNextStageClicked = () => {
   }
   documentSection.style.display = 'none';
   searchSection.style.display = 'block';
-  const terms = new Set();
-  for (const document of documents) {
-    const doc_terms = preprocess(document);
-    for (const term of doc_terms) {
-      terms.add(term);
-    }
-  }
 
   idf = calculate_idf(documents);
   doc_vectors = calculate_tf_idf(documents, idf);
@@ -61,7 +54,7 @@ const onSearchFormSubmit = event => {
     alert('Введіть пошуковий запит');
     return;
   }
-  const query_vector = create_query_vector(query, idf);
+  const query_vector = calculate_tf(query, idf);
 
   const results = [];
   for (let i = 0; i < documents.length; i++) {
@@ -96,6 +89,7 @@ function preprocess(text) {
 
 // Calculate IDF values for each term in documents
 function calculate_idf(documents) {
+  // idf - тут кількість документів в які входять терми
   const idf = {};
   const N = documents.length;
 
@@ -107,65 +101,56 @@ function calculate_idf(documents) {
     }
   }
 
+  // updatedIdf - тут вже Idf по формулі
+  const updatedIdf = {};
+
   for (const term in idf) {
-    idf[term] = Math.log((N + 1) / (idf[term] + 1)) + 1;
+    if (N - idf[term] === 0 || idf[term] === 0) {
+      updatedIdf[term] = 0;
+    } else {
+      updatedIdf[term] = Math.log((N - idf[term]) / idf[term]);
+    }
   }
 
-  return idf;
+  return updatedIdf;
 }
 
-// Calculate TF-IDF scores for each term in each document
+function calculate_tf(query, idf) {
+  const tf = {};
+  const terms = preprocess(query);
+
+  for (const term of terms) {
+    tf[term] = (tf[term] || 0) + 1;
+  }
+
+  const vector = [];
+
+  for (const term in idf) {
+    const tf_score = Math.log(1 + (tf[term] || 0));
+    const tf_idf_score = tf_score * idf[term];
+    vector.push(tf_idf_score);
+  }
+  return vector;
+}
+
 function calculate_tf_idf(documents, idf) {
   const tf_idf = [];
 
   for (const document of documents) {
-    const tf = {};
-    const terms = preprocess(document);
-
-    for (const term of terms) {
-      tf[term] = (tf[term] || 0) + 1;
-    }
-
-    const vector = [];
-
-    for (const term in idf) {
-      const tf_idf_score = (tf[term] || 0) * idf[term];
-      vector.push(tf_idf_score);
-    }
-
+    const vector = calculate_tf(document, idf);
     tf_idf.push(vector);
   }
 
   return tf_idf;
 }
 
-// Create query vector using TF-IDF scores and IDF values
-function create_query_vector(query, idf) {
-  const tf = {};
-  const terms = preprocess(query);
-
-  for (const term of terms) {
-    tf[term] = (tf[term] ?? 0) + 1;
-  }
-
-  const vector = [];
-
-  for (const term in idf) {
-    const tf_idf_score = (tf[term] || 0) * idf[term];
-    vector.push(tf_idf_score);
-  }
-
-  return vector;
-}
-
-// Calculate cosine similarity between two vectors
 function cosine_similarity(a, b) {
-  let dotProduct = 0;
+  let sum = 0;
   let normA = 0;
   let normB = 0;
 
   for (let i = 0; i < a.length; i++) {
-    dotProduct += a[i] * b[i];
+    sum += a[i] * b[i];
     normA += a[i] ** 2;
     normB += b[i] ** 2;
   }
@@ -173,46 +158,5 @@ function cosine_similarity(a, b) {
   normA = Math.sqrt(normA);
   normB = Math.sqrt(normB);
 
-  return dotProduct / (normA * normB);
+  return normA === 0 || normB === 0 ? 0 : sum / (normA * normB);
 }
-
-// Set minimum similarity score for a document to be displayed in query results
-
-// Example usage
-// const documents = [
-//   'This is the first document',
-//   'This document is the second document',
-//   'And this is the third one',
-// ];
-
-// const terms = new Set();
-// for (const document of documents) {
-//   const doc_terms = preprocess(document);
-//   for (const term of doc_terms) {
-//     terms.add(term);
-//   }
-// }
-
-// const idf = calculate_idf(documents);
-// const doc_vectors = calculate_tf_idf(documents, idf);
-
-// const query = 'this is a query';
-// const query_vector = create_query_vector(query, idf);
-
-// const results = [];
-// for (let i = 0; i < documents.length; i++) {
-//   const similarity = cosine_similarity(query_vector, doc_vectors[i]);
-//   if (similarity > threshold) {
-//     results.push([i, similarity]);
-//   }
-// }
-
-// results.sort((a, b) => b[1] - a[1]);
-
-// console.log(`Query: "${query}"`);
-// console.log(`Minimum similarity score: ${threshold}`);
-// console.log(`\nSearch results:`);
-// for (const [index, similarity] of results) {
-//   console.log(`Document ${index + 1}: "${documents[index]}"`);
-//   console.log(`Similarity score: ${similarity.toFixed(3)}\n`);
-// }
