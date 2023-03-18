@@ -84,7 +84,11 @@ searchForm.addEventListener('submit', onSearchFormSubmit);
 
 // ______________________________________________________
 function preprocess(text) {
-  return text.toLowerCase().match(/\w+/g);
+  console.log(text.toLowerCase().match(/\w+/g));
+  return text
+    .replace(/[^\w\s]/gi, '')
+    .toLowerCase()
+    .split(/\s+/);
 }
 
 // Calculate IDF values for each term in documents
@@ -94,7 +98,7 @@ function calculate_idf(documents) {
   const N = documents.length;
 
   for (const document of documents) {
-    const terms = new Set(preprocess(document));
+    const terms = preprocess(document);
 
     for (const term of terms) {
       idf[term] = (idf[term] || 0) + 1;

@@ -32,7 +32,14 @@ const onTermFormSubmit = event => {
     alert('Введіть хоча б один терм');
     return;
   }
-  terms = [...new Set(text.split(', ').map(line => line.trim()))];
+  terms = [
+    ...new Set(
+      text
+        .toLowerCase()
+        .split(', ')
+        .map(line => line.trim()),
+    ),
+  ];
 
   const termsToDisplay = terms.map((term, i) => `term ${i + 1}: "${term}"`).join('<br>');
   termSection.style.display = 'none';
@@ -264,11 +271,17 @@ function booleanModel(query, docs) {
 
   return searchBySubterms(newTerms, docs);
 }
+function getWordsFromString(str) {
+  const strippedStr = str.replace(/[^\w\s]/gi, '').toLowerCase();
+  const words = strippedStr.split(/\s+/);
+
+  return words;
+}
 
 function createDocumentObject(documents, terms) {
   const docs = {};
   for (let i = 0; i < documents.length; i++) {
-    const doc = documents[i];
+    const doc = getWordsFromString(documents[i]);
     const docTerms = [];
     for (let j = 0; j < terms.length; j++) {
       const term = terms[j];
