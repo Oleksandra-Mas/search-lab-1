@@ -224,8 +224,12 @@ function booleanModel(query, docs) {
       newTerm !== '(' &&
       newTerm !== ')'
     ) {
+      if (newTerm.startsWith('NOT ')) {
+        newTerm = newTerm.substring(4);
+      }
       if (!terms.includes(newTerm)) {
         shouldQuit = true;
+        console.log(newTerm);
         alert('Невідомий терм в запиті');
       }
     }
