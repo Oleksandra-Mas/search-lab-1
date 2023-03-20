@@ -54,6 +54,7 @@ const onSearchFormSubmit = event => {
     alert('Введіть пошуковий запит');
     return;
   }
+  // рахує tfidf
   const query_vector = calculate_tf(query, idf);
 
   const results = [];
@@ -91,7 +92,7 @@ function preprocess(text) {
     .split(/\s+/);
 }
 
-// Calculate IDF values for each term in documents
+// inverse document frequency
 function calculate_idf(documents) {
   // idf - тут кількість документів в які входять терми
   const idf = {};
@@ -118,7 +119,7 @@ function calculate_idf(documents) {
 
   return updatedIdf;
 }
-
+// рахує tfidf
 function calculate_tf(query, idf) {
   const tf = {};
   const terms = preprocess(query);
@@ -141,6 +142,8 @@ function calculate_tf_idf(documents, idf) {
   const tf_idf = [];
 
   for (const document of documents) {
+    // term frequency
+    // рахує tfidf
     const vector = calculate_tf(document, idf);
     tf_idf.push(vector);
   }
